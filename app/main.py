@@ -3,10 +3,11 @@ from contextlib import asynccontextmanager
 from typing import List
 from fastapi import FastAPI, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from .database import engine, Base, get_db
-from .config import settings
-from .scheduler import pinger_loop
-from . import crud, schemas
+from database import engine, Base, get_db
+from config import settings
+from scheduler import pinger_loop
+import crud
+import schemas
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):

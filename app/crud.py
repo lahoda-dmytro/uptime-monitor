@@ -1,7 +1,8 @@
 from typing import Sequence, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from . import models, schemas
+import models
+import schemas
 
 async def get_sites(db: AsyncSession, active_only: bool = False) -> Sequence[models.Site]:
     query = select(models.Site)

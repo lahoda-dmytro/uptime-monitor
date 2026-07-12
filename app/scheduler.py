@@ -2,8 +2,8 @@ import asyncio
 import time
 from typing import Optional
 import httpx
-from .database import SessionLocal
-from .crud import get_sites, create_ping_log
+from database import SessionLocal
+from crud import get_sites, create_ping_log
 
 async def ping_site(client: httpx.AsyncClient, site_id: int, url: str) -> None:
     start_time = time.perf_counter()

@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import List, Optional
 from sqlalchemy import ForeignKey, String, DateTime, Integer, Boolean, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from .database import Base
+from database import Base
 
 class Site(Base):
     __tablename__ = "sites"
