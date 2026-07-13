@@ -2,25 +2,29 @@ from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel, HttpUrl
 
+
 class SiteBase(BaseModel):
-    url: str
+    url: HttpUrl
     name: str
     is_active: bool = True
+
 
 class SiteCreate(SiteBase):
     pass
 
+
 class SiteUpdate(BaseModel):
-    url: Optional[str] = None
+    url: Optional[HttpUrl] = None
     name: Optional[str] = None
     is_active: Optional[bool] = None
+
 
 class SiteResponse(SiteBase):
     id: int
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = {"from_attributes": True}
+
 
 class PingLogResponse(BaseModel):
     id: int
@@ -31,5 +35,4 @@ class PingLogResponse(BaseModel):
     checked_at: datetime
     error_message: Optional[str] = None
 
-    class Config:
-        from_attributes = True
+    model_config = {"from_attributes": True}

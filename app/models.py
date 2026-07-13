@@ -4,10 +4,11 @@ from sqlalchemy import ForeignKey, String, DateTime, Integer, Boolean, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from database import Base
 
+
 class Site(Base):
     __tablename__ = "sites"
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
     url: Mapped[str] = mapped_column(String(2048), unique=True, index=True, nullable=False)
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
@@ -15,10 +16,11 @@ class Site(Base):
 
     logs: Mapped[List["PingLog"]] = relationship("PingLog", back_populates="site", cascade="all, delete-orphan")
 
+
 class PingLog(Base):
     __tablename__ = "ping_logs"
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
     site_id: Mapped[int] = mapped_column(Integer, ForeignKey("sites.id", ondelete="CASCADE"), nullable=False)
     status_code: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
     response_time_ms: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)

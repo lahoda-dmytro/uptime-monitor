@@ -1,9 +1,15 @@
 import asyncio
+import logging
 import time
 from typing import Optional
+
 import httpx
+
 from database import SessionLocal
 from crud import get_sites, create_ping_log
+
+logger = logging.getLogger(__name__)
+
 
 async def ping_site(client: httpx.AsyncClient, site_id: int, url: str) -> None:
     start_time = time.perf_counter()
@@ -34,22 +40,23 @@ async def ping_site(client: httpx.AsyncClient, site_id: int, url: str) -> None:
                 status_code=status_code,
                 response_time_ms=response_time_ms,
                 is_up=is_up,
-                error_message=error_message
+                error_message=error_message,
             )
         except Exception:
-            pass
+            logger.exception("Failed to save ping log for site_id=%s", site_id)
+
 
 async def pinger_loop(interval: int) -> None:
     while True:
         try:
             async with SessionLocal() as db:
                 sites = await get_sites(db, active_only=True)
-            
+
             if sites:
                 async with httpx.AsyncClient() as client:
                     tasks = [ping_site(client, site.id, site.url) for site in sites]
                     await asyncio.gather(*tasks, return_exceptions=True)
         except Exception:
-            pass
-        
+            logger.exception("Unexpected error in pinger_loop")
+
         await asyncio.sleep(interval)
