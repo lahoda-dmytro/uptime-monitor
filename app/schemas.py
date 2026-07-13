@@ -4,7 +4,7 @@ from pydantic import BaseModel, HttpUrl
 
 
 class SiteBase(BaseModel):
-    url: HttpUrl
+    url: str
     name: str
     is_active: bool = True
 
@@ -14,7 +14,7 @@ class SiteCreate(SiteBase):
 
 
 class SiteUpdate(BaseModel):
-    url: Optional[HttpUrl] = None
+    url: Optional[str] = None
     name: Optional[str] = None
     is_active: Optional[bool] = None
 
