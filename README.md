@@ -1,24 +1,25 @@
-# Uptime Monitor Homelab
+# uptime monitor homelab
 
-This repository contains a self-hosted Uptime Monitor designed to ping a list of websites and store their status in a database. It serves as a hands-on project to practice modern DevOps patterns, including containerization, automated deployment, Infrastructure as Code, and monitoring.
+this repository contains a self-hosted uptime monitoring system that periodically checks a list of websites and stores their availability status in a database. it is designed as a hands-on project for learning and practicing modern devops principles, including containerization, infrastructure as code, continuous integration and deployment, automation, and monitoring.
 
-## Architecture
+## architecture
 
-The system consists of three main services running in Docker containers:
-* FastAPI: The core web service running a REST API and a background scheduler that performs HTTP check requests.
-* Nginx: A reverse proxy that handles incoming traffic and forwards it to the FastAPI application.
-* PostgreSQL: The persistent data store that holds the list of websites and their historical check logs.
+the system consists of three main services running in docker containers:
 
-For provisioning and deployment, we use Terraform to create the Azure virtual machine, Ansible to configure the system packages and Docker environment, and GitHub Actions to handle continuous integration and deployment.
+- fastapi – the core application that exposes a rest api and runs a background scheduler responsible for periodically checking website availability.
+- nginx – a reverse proxy that handles incoming requests and forwards them to the fastapi application.
+- postgresql – the persistent database that stores the list of monitored websites and their historical status check results.
 
-## Repository Layout
+the infrastructure is provisioned using terraform to create an azure virtual machine, ansible is used to configure the operating system and docker environment, and github actions provides continuous integration and automated deployment pipelines.
 
-* `app/` - Python FastAPI codebase, dependencies, and application Dockerfile.
-* `compose/` - Docker Compose configuration to orchestrate the services locally or in production.
-* `nginx/` - Configuration files for the Nginx reverse proxy.
-* `postgres/` - SQL initialization scripts for database setup.
-* `scripts/` - Shell scripts for deployment, backups, health checks, and maintenance.
-* `terraform/` - Terraform configuration files to provision Azure infrastructure.
-* `ansible/` - Playbooks and roles to configure the server.
-* `.github/` - GitHub Actions workflow definitions for CI/CD.
-* `docs/` - System architecture details and deployment guides.
+## repository layout
+
+* `app/` - fastapi application source code, project dependencies, and the application dockerfile.
+* `compose/` - docker compose configuration for local development and production deployment.
+* `nginx/` - nginx reverse proxy configuration files.
+* `postgres/` - sql initialization scripts for database setup.
+* `scripts/` - shell scripts for deployment, backups, health checks, and maintenance tasks.
+* `terraform/` - terraform configuration files for provisioning azure infrastructure.
+* `ansible/` - ansible playbooks and roles for server configuration.
+* `.github/` - github actions workflows for ci/cd automation.
+* `docs/` - project documentation, including architecture and deployment guides.

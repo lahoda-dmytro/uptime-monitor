@@ -8,8 +8,9 @@ class Settings(BaseSettings):
     postgres_host: str = "localhost"
     postgres_port: int = 5432
     ping_interval_seconds: int = 60
+    app_port: int = 8000
 
-    model_config = SettingsConfigDict(env_file=".env")
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     @property
     def database_url(self) -> str:
