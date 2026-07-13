@@ -8,7 +8,7 @@ import schemas
 async def get_sites(db: AsyncSession, active_only: bool = False) -> Sequence[models.Site]:
     query = select(models.Site)
     if active_only:
-        query = query.where(models.Site.is_active == True)
+        query = query.where(models.Site.is_active)
     result = await db.execute(query)
     return result.scalars().all()
 
