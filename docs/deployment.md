@@ -8,10 +8,30 @@ terraform manages the azure infrastructure as code. the infrastructure configura
 
 ### prerequisites
 
-install both the azure cli and terraform on your local machine. before running terraform, authenticate with your azure account:
+install both the azure cli and terraform on your local machine. azure requires an rsa ssh key — ed25519 is not supported via the terraform provider. if you don't have one yet, generate it:
+
+```bash
+ssh-keygen -t rsa -b 4096 -C "uptime-monitor" -f ~/.ssh/id_rsa_azure
+```
+
+before running terraform, authenticate with your azure account:
 
 ```bash
 az login
+```
+
+### configuring variables
+
+terraform requires two environment-specific values that are not committed to the repository: the azure region and the path to your ssh public key. copy the example file and fill it in:
+
+```bash
+cp terraform/terraform.tfvars.example terraform/terraform.tfvars
+```
+
+then open `terraform/terraform.tfvars` and set the values. the following azure regions are currently allowed by the subscription policy:
+
+```
+swedencentral, spaincentral, norwayeast, polandcentral, switzerlandnorth
 ```
 
 ### deployment steps
@@ -34,12 +54,6 @@ az login
    ```
    after the deployment is complete, terraform will output the public ip address of the created virtual machine as `vm_public_ip`.
 
-by default, terraform uses the local ssh public key located at `~/.ssh/id_ed25519.pub`. if you want to use a different key, specify its path using an environment variable without modifying the terraform configuration:
-
-```bash
-export TF_VAR_ssh_public_key_path="~/.ssh/my_custom_key.pub"
-```
-
 ## automated configuration with ansible
 
 after the virtual machine has been provisioned, ansible configures the server environment by installing docker, setting the required permissions, and creating the necessary directories.
@@ -59,39 +73,46 @@ after the virtual machine has been provisioned, ansible configures the server en
 alternatively, you can execute the playbook without creating an inventory file by providing the ip address and private key directly from the command line:
 
 ```bash
-ansible-playbook -i "YOUR_VM_PUBLIC_IP," ansible/playbook.yml -u azureuser --private-key="~/.ssh/id_ed25519"
+ansible-playbook -i "YOUR_VM_PUBLIC_IP," ansible/playbook.yml -u azureuser --private-key="~/.ssh/id_rsa_azure"
 ```
 
 the playbook updates the operating system packages, installs docker together with the docker compose plugin, adds the user to the `docker` group, and prepares the `/var/www/uptime-monitor` directory.
 
 ## directory and environment setup
 
-after the server has been configured, connect to the virtual machine and create the production `.env` file inside the `/var/www/uptime-monitor` directory:
+after the server has been configured, connect to the virtual machine and clone the repository:
 
-```env
-POSTGRES_DB=uptime_monitor
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=your_secure_production_password
-POSTGRES_HOST=postgres
-POSTGRES_PORT=5432
-APP_PORT=8000
-PING_INTERVAL_SECONDS=60
+```bash
+ssh azureuser@YOUR_VM_PUBLIC_IP
+git clone https://github.com/<your-username>/uptime-monitor.git /var/www/uptime-monitor
 ```
 
-to initialize the project on the server, clone the repository directly into `/var/www/uptime-monitor`.
+then create the production `.env` file:
+
+```bash
+cd /var/www/uptime-monitor
+cp .env.example .env
+nano .env
+```
+
+fill in the actual values, especially `POSTGRES_PASSWORD`. this file is never committed to the repository.
 
 ## configure github actions secrets
 
-to allow github actions to securely connect to the server, configure the required repository secrets in github:
+to allow github actions to securely connect to the server, configure the required repository secrets in github.
 
-1. **private key**: copy the contents of your private ssh key (`~/.ssh/id_ed25519`).
-2. **github secrets**: navigate to **settings → secrets and variables → actions → new repository secret** in your github repository and add the following secrets:
-   * `SERVER_IP` - the public ip address of your azure virtual machine.
-   * `SERVER_USER` - the ssh username (default is `azureuser`).
-   * `SSH_PRIVATE_KEY` - the complete contents of the private ssh key.
+navigate to **settings → secrets and variables → actions → new repository secret** and add the following:
+
+| secret | value |
+|---|---|
+| `SERVER_IP` | public ip address of the azure virtual machine |
+| `SERVER_USER` | ssh username (default: `azureuser`) |
+| `SSH_PRIVATE_KEY` | full contents of `~/.ssh/id_rsa_azure` (the private key, not `.pub`) |
+
+copy the private key contents including the `-----BEGIN...` and `-----END...` lines.
 
 ## triggering deployment
 
-after the repository secrets have been configured and the project directory has been initialized, every push or merged pull request into the `main` branch automatically triggers the deployment pipeline.
+after the repository secrets have been configured and the project directory has been initialized on the server, every push or merged pull request into the `main` branch automatically triggers the deployment pipeline.
 
 github actions connects to the server, executes `git pull`, rebuilds the docker images, starts the application containers, and performs a health check to verify that the deployment completed successfully.
