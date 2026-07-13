@@ -60,6 +60,9 @@ if [[ ! "$CONFIRM" =~ ^[yY]$ ]]; then
     exit 0
 fi
 
+echo "cleaning database schema..."
+docker exec -i "$CONTAINER_NAME" psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
+
 echo "restoring database from $(basename "$SELECTED_BACKUP")..."
 if gunzip -c "$SELECTED_BACKUP" | docker exec -i "$CONTAINER_NAME" psql -U "$POSTGRES_USER" -d "$POSTGRES_DB"; then
     echo "database successfully restored"
