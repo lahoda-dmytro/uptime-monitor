@@ -1,0 +1,5 @@
+# Copy this file to terraform.tfvars and fill in your values
+# Allowed locations for this subscription: swedencentral, spaincentral, norwayeast, polandcentral, switzerlandnorth
+
+location            = "swedencentral"
+ssh_public_key_path = "~/.ssh/id_rsa_azure.pub"

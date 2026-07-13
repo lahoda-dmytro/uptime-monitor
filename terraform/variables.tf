@@ -1,6 +1,6 @@
 variable "location" {
   type        = string
-  default     = "East US"
+  description = "Azure region where resources will be deployed"
 }
 
 variable "resource_group_name" {
@@ -20,5 +20,5 @@ variable "admin_username" {
 
 variable "ssh_public_key_path" {
   type        = string
-  default     = "~/.ssh/id_ed25519.pub"
+  description = "Path to the RSA public key file for SSH access"
 }
