@@ -14,7 +14,7 @@ done
 echo "all containers are running"
 
 echo "checking API health endpoint..."
-HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/health || true)
+HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:80/health || true)
 
 if [ "$HTTP_STATUS" -eq 200 ]; then
     echo "healthcheck passed: API is healthy and reachable through nginx"
