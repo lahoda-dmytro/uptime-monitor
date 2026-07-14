@@ -64,3 +64,42 @@
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
         mode: '0755'
+
+    # SSH hardening
+    - name: Disable root login via SSH
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^#?PermitRootLogin'
+        line: 'PermitRootLogin no'
+        state: present
+
+    - name: Disable password authentication
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^#?PasswordAuthentication'
+        line: 'PasswordAuthentication no'
+        state: present
+
+    - name: Limit max authentication attempts
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^#?MaxAuthTries'
+        line: 'MaxAuthTries 3'
+        state: present
+
+    - name: Restart SSH service to apply changes
+      service:
+        name: ssh
+        state: restarted
+
+    # fail2ban
+    - name: Install fail2ban
+      apt:
+        name: fail2ban
+        state: present
+
+    - name: Ensure fail2ban is running and enabled
+      service:
+        name: fail2ban
+        state: started
+        enabled: yes
