@@ -1,12 +1,13 @@
 import asyncio
 import logging
+from concurrent.futures import ThreadPoolExecutor
 from contextlib import asynccontextmanager
 from typing import List
 
 from fastapi import FastAPI, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from database import engine, Base, get_db
+from database import get_db
 from config import settings
 from scheduler import pinger_loop
 import crud
@@ -16,10 +17,18 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
+def _run_migrations() -> None:
+    from alembic.config import Config
+    from alembic import command
+    alembic_cfg = Config("alembic.ini")
+    command.upgrade(alembic_cfg, "head")
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    loop = asyncio.get_running_loop()
+    with ThreadPoolExecutor(max_workers=1) as executor:
+        await loop.run_in_executor(executor, _run_migrations)
 
     pinger_task = asyncio.create_task(pinger_loop(settings.ping_interval_seconds))
     yield
