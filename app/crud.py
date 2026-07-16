@@ -49,6 +49,17 @@ async def get_site_logs(db: AsyncSession, site_id: int, limit: int = 100) -> Seq
     return result.scalars().all()
 
 
+async def get_last_ping_log(db: AsyncSession, site_id: int) -> Optional[models.PingLog]:
+    query = (
+        select(models.PingLog)
+        .where(models.PingLog.site_id == site_id)
+        .order_by(models.PingLog.checked_at.desc())
+        .limit(1)
+    )
+    result = await db.execute(query)
+    return result.scalar_one_or_none()
+
+
 async def create_ping_log(
     db: AsyncSession,
     site_id: int,
