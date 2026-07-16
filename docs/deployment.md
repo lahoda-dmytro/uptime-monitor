@@ -116,3 +116,56 @@ copy the private key contents including the `-----BEGIN...` and `-----END...` li
 after the repository secrets have been configured and the project directory has been initialized on the server, every push or merged pull request into the `main` branch automatically triggers the deployment pipeline.
 
 github actions connects to the server, executes `git pull`, rebuilds the docker images, starts the application containers, and performs a health check to verify that the deployment completed successfully.
+
+## domain and dns setup
+
+point your domain to the server by adding an A record in your dns provider:
+
+| type | name | value |
+|---|---|---|
+| A | `@` | public ip of the azure vm |
+| A | `www` | public ip of the azure vm |
+
+dns propagation can take anywhere from a few minutes to several hours depending on the ttl setting. verify with:
+
+```bash
+nslookup your-domain.com
+```
+
+the output should show the vm's public ip address.
+
+## ssl certificate setup
+
+ssl is managed by let's encrypt via the certbot container. the certificate must be obtained manually once after the first deploy. subsequent renewals happen automatically every 12 hours inside the certbot container.
+
+before running the script, make sure the domain already resolves to the server ip (check with `nslookup` above).
+
+connect to the server and run:
+
+```bash
+ssh -i ~/.ssh/id_rsa_azure azureuser@YOUR_VM_PUBLIC_IP
+cd /var/www/uptime-monitor
+bash scripts/init_ssl.sh
+```
+
+the script handles the full process automatically: it temporarily switches nginx to an http-only config to allow the acme challenge, requests the certificate, then restores the full https configuration.
+
+after the script completes, verify with:
+
+```bash
+curl -I https://your-domain.com/health
+```
+
+the response should show `HTTP/2 200` with `strict-transport-security` in the headers.
+
+## database migrations
+
+the application uses alembic to manage the database schema. migrations run automatically at startup via `alembic upgrade head`.
+
+if you are deploying to a server that already has an existing database created before alembic was introduced, you need to stamp the initial migration as already applied. without this, alembic will try to create tables that already exist and the application will fail to start:
+
+```bash
+docker compose -f compose/docker-compose.yml run --rm --no-deps --entrypoint "" app alembic stamp 0001
+```
+
+this only needs to be done once. future migrations will apply automatically on every deploy.
