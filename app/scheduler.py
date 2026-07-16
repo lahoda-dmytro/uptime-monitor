@@ -5,13 +5,26 @@ from typing import Optional
 
 import httpx
 
+from config import settings
 from database import SessionLocal
-from crud import get_sites, create_ping_log
+from crud import get_sites, create_ping_log, get_last_ping_log
 
 logger = logging.getLogger(__name__)
 
 
-async def ping_site(client: httpx.AsyncClient, site_id: int, url: str) -> None:
+async def send_telegram_alert(client: httpx.AsyncClient, message: str) -> None:
+    token = settings.telegram_bot_token
+    chat_id = settings.telegram_chat_id
+    if not token or not chat_id:
+        return
+    url = f"https://api.telegram.org/bot{token}/sendMessage"
+    try:
+        await client.post(url, json={"chat_id": chat_id, "text": message, "parse_mode": "HTML"})
+    except Exception:
+        logger.exception("Failed to send Telegram alert")
+
+
+async def ping_site(client: httpx.AsyncClient, site_id: int, url: str, site_name: str) -> None:
     start_time = time.perf_counter()
     status_code: Optional[int] = None
     response_time_ms: Optional[int] = None
@@ -34,6 +47,9 @@ async def ping_site(client: httpx.AsyncClient, site_id: int, url: str) -> None:
 
     async with SessionLocal() as db:
         try:
+            previous_log = await get_last_ping_log(db, site_id)
+            previous_status = previous_log.is_up if previous_log else None
+
             await create_ping_log(
                 db=db,
                 site_id=site_id,
@@ -42,6 +58,25 @@ async def ping_site(client: httpx.AsyncClient, site_id: int, url: str) -> None:
                 is_up=is_up,
                 error_message=error_message,
             )
+
+            # Send alert only when status changes
+            if previous_status is not None and previous_status != is_up:
+                if not is_up:
+                    message = (
+                        f"<b>Site down</b>\n"
+                        f"<b>{site_name}</b> is not responding\n"
+                        f"URL: {url}\n"
+                        f"Error: {error_message}"
+                    )
+                else:
+                    message = (
+                        f"<b>Site recovered</b>\n"
+                        f"<b>{site_name}</b> is back online\n"
+                        f"URL: {url}\n"
+                        f"Response time: {response_time_ms}ms"
+                    )
+                await send_telegram_alert(client, message)
+
         except Exception:
             logger.exception("Failed to save ping log for site_id=%s", site_id)
 
@@ -54,7 +89,7 @@ async def pinger_loop(interval: int) -> None:
 
             if sites:
                 async with httpx.AsyncClient() as client:
-                    tasks = [ping_site(client, site.id, site.url) for site in sites]
+                    tasks = [ping_site(client, site.id, site.url, site.name) for site in sites]
                     await asyncio.gather(*tasks, return_exceptions=True)
         except Exception:
             logger.exception("Unexpected error in pinger_loop")

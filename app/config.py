@@ -1,3 +1,4 @@
+from typing import Optional
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -9,6 +10,9 @@ class Settings(BaseSettings):
     postgres_port: int = 5432
     ping_interval_seconds: int = 60
     app_port: int = 8000
+
+    telegram_bot_token: Optional[str] = None
+    telegram_chat_id: Optional[str] = None
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
