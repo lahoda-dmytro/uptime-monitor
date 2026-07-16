@@ -82,13 +82,20 @@ async def ping_site(client: httpx.AsyncClient, site_id: int, url: str, site_name
 
 
 async def pinger_loop(interval: int) -> None:
+    headers = {
+        "User-Agent": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/120.0.0.0 Safari/537.36"
+        )
+    }
     while True:
         try:
             async with SessionLocal() as db:
                 sites = await get_sites(db, active_only=True)
 
             if sites:
-                async with httpx.AsyncClient() as client:
+                async with httpx.AsyncClient(headers=headers) as client:
                     tasks = [ping_site(client, site.id, site.url, site.name) for site in sites]
                     await asyncio.gather(*tasks, return_exceptions=True)
         except Exception:
