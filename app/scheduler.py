@@ -59,15 +59,17 @@ async def ping_site(client: httpx.AsyncClient, site_id: int, url: str, site_name
                 error_message=error_message,
             )
 
-            # Send alert only when status changes
-            if previous_status is not None and previous_status != is_up:
-                if not is_up:
+            if previous_status != is_up:
+                if previous_status is None and is_up:
+                    pass
+                elif not is_up:
                     message = (
                         f"<b>Site down</b>\n"
                         f"<b>{site_name}</b> is not responding\n"
                         f"URL: {url}\n"
                         f"Error: {error_message}"
                     )
+                    await send_telegram_alert(client, message)
                 else:
                     message = (
                         f"<b>Site recovered</b>\n"
@@ -75,7 +77,7 @@ async def ping_site(client: httpx.AsyncClient, site_id: int, url: str, site_name
                         f"URL: {url}\n"
                         f"Response time: {response_time_ms}ms"
                     )
-                await send_telegram_alert(client, message)
+                    await send_telegram_alert(client, message)
 
         except Exception:
             logger.exception("Failed to save ping log for site_id=%s", site_id)
