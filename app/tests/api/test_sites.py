@@ -15,7 +15,7 @@ async def test_create_site(client: AsyncClient, db_session):
     )
     assert response.status_code == 201
     data = response.json()
-    assert data["url"] == "https://example.com/"
+    assert data["url"] == "https://example.com"
     assert data["name"] == "Example"
     assert "id" in data
 
@@ -38,7 +38,7 @@ async def test_get_sites(client: AsyncClient, db_session):
     assert response.status_code == 200
     data = response.json()
     assert len(data) == 2
-    assert data[0]["url"] == "https://test1.com/"
+    assert data[0]["url"] == "https://test1.com"
 
 @pytest.mark.asyncio
 async def test_delete_site(client: AsyncClient, db_session):

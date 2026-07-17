@@ -69,4 +69,4 @@ async def test_ping_site_exception(db_session: AsyncSession):
     assert last_log is not None
     assert last_log.is_up is False
     assert last_log.status_code is None
-    assert "ConnectError" in last_log.error_message
+    assert "Connection failed" in last_log.error_message

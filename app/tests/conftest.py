@@ -14,7 +14,7 @@ engine = create_async_engine(
     SQLALCHEMY_DATABASE_URL, 
     connect_args={"check_same_thread": False}
 )
-TestingSessionLocal = async_sessionmaker(autocommit=False, autoflush=False, bind=engine)
+TestingSessionLocal = async_sessionmaker(autocommit=False, autoflush=False, bind=engine, expire_on_commit=False)
 
 async def override_get_db():
     async with TestingSessionLocal() as session:
