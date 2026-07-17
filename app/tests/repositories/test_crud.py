@@ -19,7 +19,7 @@ async def test_ping_logs(db_session: AsyncSession):
     site_in = schemas.SiteCreate(url="https://test.com", name="Test")
     site = await crud.create_site(db_session, site_in)
     
-    log1 = await crud.create_ping_log(
+    await crud.create_ping_log(
         db_session, site_id=site.id, status_code=200, 
         response_time_ms=100, is_up=True, error_message=None
     )

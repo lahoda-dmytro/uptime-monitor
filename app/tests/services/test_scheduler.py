@@ -3,7 +3,9 @@ import httpx
 from sqlalchemy.ext.asyncio import AsyncSession
 import crud
 import schemas
+import scheduler
 from scheduler import ping_site
+from tests.conftest import TestingSessionLocal
 
 class MockResponse:
     def __init__(self, status_code):
@@ -30,8 +32,6 @@ class MockExceptionClient:
     async def post(self, url, **kwargs):
         pass
 
-import scheduler
-from tests.conftest import TestingSessionLocal
 scheduler.SessionLocal = TestingSessionLocal
 
 @pytest.mark.asyncio
