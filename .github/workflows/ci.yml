@@ -34,7 +34,7 @@ jobs:
       - name: Run tests with pytest
         run: |
           cd app
-          pytest tests/
+          PYTHONPATH=. pytest tests/
 
   deploy:
     name: Deploy to Server
