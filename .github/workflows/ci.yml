@@ -32,6 +32,8 @@ jobs:
           ruff check app/
 
       - name: Run tests with pytest
+        env:
+          POSTGRES_PASSWORD: dummy_password_for_tests
         run: |
           cd app
           PYTHONPATH=. pytest tests/
