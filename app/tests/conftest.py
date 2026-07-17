@@ -1,3 +1,4 @@
+import os
 import pytest_asyncio
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from httpx import AsyncClient, ASGITransport
@@ -5,7 +6,9 @@ from httpx import AsyncClient, ASGITransport
 from database import Base, get_db
 from main import app
 
-SQLALCHEMY_DATABASE_URL = "sqlite+aiosqlite:///:memory:"
+# Use a temporary SQLite file for testing instead of in-memory to allow multiple concurrent connections
+# to see the same database schema and data.
+SQLALCHEMY_DATABASE_URL = "sqlite+aiosqlite:///./test_temp.db"
 
 engine = create_async_engine(
     SQLALCHEMY_DATABASE_URL, 
@@ -34,3 +37,19 @@ async def db_session():
 async def client():
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
         yield ac
+
+@pytest_asyncio.fixture(scope="session", autouse=True)
+async def cleanup_db_file():
+    # Remove file if it exists from a crashed run
+    try:
+        if os.path.exists("./test_temp.db"):
+            os.remove("./test_temp.db")
+    except Exception:
+        pass
+    yield
+    await engine.dispose()
+    try:
+        if os.path.exists("./test_temp.db"):
+            os.remove("./test_temp.db")
+    except Exception:
+        pass
