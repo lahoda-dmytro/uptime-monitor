@@ -1,0 +1,189 @@
+:root {
+    --bg-color: #050505;
+    --text-color: #f0f0f0;
+    --accent-blue: #0000ff;
+    --font-mono: 'Fira Code', monospace;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: var(--font-mono);
+    line-height: 1.6;
+    padding: 3rem 2rem;
+}
+
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4rem;
+    font-size: 1.1rem;
+}
+
+.nav-right {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.bracket {
+    color: var(--text-color);
+}
+
+.nav-item {
+    color: var(--text-color);
+}
+
+.nav-link {
+    color: var(--text-color);
+    text-decoration: none;
+    background-color: var(--accent-blue);
+    padding: 0 0.25rem;
+    transition: all 0.2s;
+}
+
+.nav-link:hover {
+    background-color: var(--text-color);
+    color: var(--bg-color);
+}
+
+.nav-link:hover .bracket {
+    color: var(--bg-color);
+}
+
+.prompt {
+    font-size: 1.5rem;
+    font-weight: normal;
+    margin-bottom: 3rem;
+}
+
+.content-wrapper {
+    display: flex;
+    gap: 4rem;
+    align-items: flex-start;
+}
+
+@media (max-width: 768px) {
+    .content-wrapper {
+        flex-direction: column;
+        gap: 2rem;
+    }
+}
+
+.ascii-art {
+    flex: 1;
+    border: 2px dashed #444;
+    padding: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 350px;
+    width: 100%;
+}
+
+.ascii-art pre {
+    font-size: 0.9rem;
+    line-height: 1.2;
+    color: var(--text-color);
+}
+
+.info-block {
+    flex: 1.2;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+.info-row {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+}
+
+.label {
+    background-color: var(--accent-blue);
+    color: white;
+    padding: 0 0.5rem;
+    min-width: 70px;
+    text-align: right;
+    display: inline-block;
+}
+
+.value {
+    flex: 1;
+}
+
+.infra-block, .links-block {
+    margin-top: 2rem;
+}
+
+.infra-list {
+    list-style: none;
+    margin-top: 1.5rem;
+    padding-left: 1rem;
+}
+
+.infra-list li {
+    margin-bottom: 0.5rem;
+}
+
+details.infra-details summary {
+    cursor: pointer;
+    list-style: none; /* Hide default arrow */
+    user-select: none;
+    display: inline-block;
+    transition: color 0.2s;
+}
+
+details.infra-details summary::-webkit-details-marker {
+    display: none;
+}
+
+details.infra-details summary:hover {
+    color: var(--accent-blue);
+}
+
+details.infra-details summary:hover .bracket {
+    color: var(--text-color);
+}
+
+.bullet {
+    color: var(--accent-blue);
+    margin-right: 0.5rem;
+    font-weight: bold;
+}
+
+.links-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    margin-top: 1.5rem;
+    padding-left: 1rem;
+}
+
+.sys-link {
+    color: var(--accent-blue);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.sys-link::before {
+    content: "> ";
+    font-weight: bold;
+}
+
+.sys-link:hover {
+    color: var(--text-color);
+    text-decoration: underline;
+    text-decoration-color: var(--accent-blue);
+}

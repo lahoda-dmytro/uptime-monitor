@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uptime Monitor</title>
+    <link rel="stylesheet" href="/assets/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="nav-left">
+                <span class="bracket">[</span> <span class="nav-item">home</span> <span class="bracket">]</span>
+            </div>
+            <div class="nav-right">
+                <a href="https://github.com/lahoda-dmytro/uptime-monitor" target="_blank" class="nav-link"><span class="bracket">[</span> code <span class="bracket">]</span></a>
+                <a href="/docs" class="nav-link"><span class="bracket">[</span> api <span class="bracket">]</span></a>
+            </div>
+        </header>
+
+        <main>
+            <h1 class="prompt">$ ./uptime-monitor --info</h1>
+            
+            <div class="content-wrapper">
+                <div class="ascii-art">
+                    <pre>
+   __  __      __  _               
+  / / / /___  / /_(_)___ ___  ___  
+ / / / / __ \/ __/ / __ `__ \/ _ \ 
+/ /_/ / /_/ / /_/ / / / / / /  __/ 
+\____/ .___/\__/_/_/ /_/ /_/\___/  
+    /_/                            
+                    </pre>
+                </div>
+
+                <div class="info-block">
+                    <div class="info-row">
+                        <span class="label name-label">name:</span>
+                        <span class="value">Uptime Monitor</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label stack-label">stack:</span>
+                        <span class="value">Python, FastAPI, PostgreSQL, Docker</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label desc-label">desc:</span>
+                        <span class="value">A self-hosted service for monitoring website availability with a complete DevOps stack. Features automated SSL, CI/CD, and Telegram alerts on state changes.</span>
+                    </div>
+
+                    <div class="infra-block">
+                        <details class="infra-details">
+                            <summary><span class="bracket">[</span> infrastructure (click to expand) <span class="bracket">]</span></summary>
+                            <ul class="infra-list">
+                                <li><span class="bullet">></span> Azure VM (Standard_B1s)</li>
+                                <li><span class="bullet">></span> Ubuntu 24.04 LTS</li>
+                                <li><span class="bullet">></span> Docker Compose</li>
+                                <li><span class="bullet">></span> Nginx Reverse Proxy</li>
+                                <li><span class="bullet">></span> Let's Encrypt / Certbot</li>
+                                <li><span class="bullet">></span> Terraform IaC</li>
+                                <li><span class="bullet">></span> Ansible Configuration</li>
+                                <li><span class="bullet">></span> GitHub Actions CI/CD</li>
+                            </ul>
+                        </details>
+                    </div>
+
+                    <div class="links-block">
+                        <span class="bracket">[</span> system links <span class="bracket">]</span>
+                        <div class="links-grid">
+                            <a href="/docs" class="sys-link">API Docs (Swagger)</a>
+                            <a href="/redoc" class="sys-link">ReDoc</a>
+                            <a href="https://github.com/lahoda-dmytro/uptime-monitor" target="_blank" class="sys-link">GitHub Repository</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
